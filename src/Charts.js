@@ -18,8 +18,20 @@ export default function Charts({ data }) {
         arr.push(obj);
       }
     } else if (value === "cities") {
-      
+      for (let i = 0; i < data.length; i++) {
+        arr.push([
+          data[i][tableData[0].onClick],
+          parseInt(data[i][tableData[tableData.length - 1].onClick]),
+        ]);
+      }
     }
+    // else if (value === "area") {
+    // let area = Object.entries(data);
+    // console.log(area);
+    // for (let i = 0; i < data.length; i++) {
+    //   arr.push([data[i][tableData[0].onClick],parseInt(data[i][tableData[tableData.length-1].onClick])]);
+    // }
+    // }
 
     setChartData(arr);
   }, [value, data]);
@@ -44,14 +56,15 @@ export default function Charts({ data }) {
       value: "cities",
     },
     // {
-    //   name: "Monthly",
-    //   value: "months",
+    //   name: "איזור",
+    //   value: "area",
     // },
   ];
 
   const charts = {
     chart: {
       type: "column",
+      // type: "bar",
     },
     title: {
       text: null,

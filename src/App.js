@@ -74,8 +74,14 @@ export default function App() {
   const orderTable = (method) => {
     const sortByKey = (array, key) => {
       return array.sort((a, b) => {
-        const x = key === "שם_ישוב" ? a["שם_ישוב"].trim() : parseInt(a[key]);
-        const y = key === "שם_ישוב" ? b["שם_ישוב"].trim() : parseInt(b[key]);
+        const x =
+          key === tableData[0].onClick
+            ? a[tableData[0].onClick].trim()
+            : parseInt(a[key]);
+        const y =
+          key === tableData[0].onClick
+            ? b[tableData[0].onClick].trim()
+            : parseInt(b[key]);
 
         return x < y ? -1 : x > y ? 1 : 0;
       });
@@ -87,7 +93,9 @@ export default function App() {
 
   const getCity = () => {
     if (search !== "") {
-      const list = allData.filter((city) => city["שם_ישוב"].includes(search));
+      const list = allData.filter((city) =>
+        city[tableData[0].onClick].includes(search)
+      );
 
       if (list.length === 0) {
         alert("אין תוצאות! נסו שוב");
@@ -156,24 +164,26 @@ export default function App() {
             return (
               <tbody key={index}>
                 <tr>
-                  <td
-                    className="city"
-                    onClick={() =>
-                      window.open(
-                        `https://www.google.co.il/search?q=${city["שם_ישוב"]}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    {city["שם_ישוב"]}
-                  </td>
-                  <td>{city["גיל_0_5"]}</td>
-                  <td>{city["גיל_6_18"]}</td>
-                  <td>{city["גיל_19_45"]}</td>
-                  <td>{city["גיל_46_55"]}</td>
-                  <td>{city["גיל_56_64"]}</td>
-                  <td>{city["גיל_65_פלוס"]}</td>
-                  <td>{city["סהכ"]}</td>
+                  {tableData.map((item, index) => {
+                    return (
+                      <td
+                        key={index}
+                        className={index === 0 ? "city" : ""}
+                        onClick={() => {
+                          if (index === 0) {
+                            window.open(
+                              `https://www.google.co.il/search?q=${
+                                city[item.onClick]
+                              }`,
+                              "_blank"
+                            );
+                          }
+                        }}
+                      >
+                        {city[item.onClick]}
+                      </td>
+                    );
+                  })}
                 </tr>
               </tbody>
             );
