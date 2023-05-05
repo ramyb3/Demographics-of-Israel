@@ -1,48 +1,50 @@
 import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import Charts from "./Charts";
+
+export const tableData = [
+  {
+    text: "יישוב",
+    onClick: "שם_ישוב",
+  },
+  {
+    text: "גילאים 0-5",
+    onClick: "גיל_0_5",
+  },
+  {
+    text: "גילאים 6-18",
+    onClick: "גיל_6_18",
+  },
+  {
+    text: "גילאים 19-45",
+    onClick: "גיל_19_45",
+  },
+  {
+    text: "גילאים 46-55",
+    onClick: "גיל_46_55",
+  },
+  {
+    text: "גילאים 56-64",
+    onClick: "גיל_56_64",
+  },
+  {
+    text: "גיל 65 ומעלה",
+    onClick: "גיל_65_פלוס",
+  },
+  {
+    text: 'סה"כ כמות תושבים',
+    onClick: "סהכ",
+  },
+];
 
 export default function App() {
   const [allData, setData] = useState([]);
   const [apiData, setAPIData] = useState([]);
   const [order, setOrder] = useState(true);
+  const [display, setDisplay] = useState(true);
   const [search, setSearch] = useState("");
   const serachRef = useRef(null);
-
-  const tableData = [
-    {
-      text: "יישוב",
-      onClick: "שם_ישוב",
-    },
-    {
-      text: "גילאים 0-5",
-      onClick: "גיל_0_5",
-    },
-    {
-      text: "גילאים 6-18",
-      onClick: "גיל_6_18",
-    },
-    {
-      text: "גילאים 19-45",
-      onClick: "גיל_19_45",
-    },
-    {
-      text: "גילאים 46-55",
-      onClick: "גיל_46_55",
-    },
-    {
-      text: "גילאים 56-64",
-      onClick: "גיל_56_64",
-    },
-    {
-      text: "גיל 65 ומעלה",
-      onClick: "גיל_65_פלוס",
-    },
-    {
-      text: 'סה"כ כמות תושבים',
-      onClick: "סהכ",
-    },
-  ];
 
   useEffect(() => {
     const getData = async () => {
@@ -102,11 +104,20 @@ export default function App() {
       <header>*המידע מתעדכן אחת לשבוע ע"י המדינה*</header>
 
       <div className="search">
+        <button onClick={() => setDisplay(!display)}>
+          {display ? "גרף" : "טבלה"}
+        </button>
+
         <input
           ref={serachRef}
           placeholder="הזן יישוב"
           type="text"
           onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              getCity();
+            }
+          }}
         />
         <button onClick={getCity}>חיפוש</button>
         <button
@@ -121,52 +132,56 @@ export default function App() {
         <span className="cities">יישובים: {allData.length}</span>
       </div>
 
-      <table border={1}>
-        <thead>
-          <tr>
-            {tableData.map((header, index) => {
-              return (
-                <th
-                  key={index}
-                  onClick={() => {
-                    orderTable(header.onClick);
-                    setOrder(!order);
-                  }}
-                >
-                  {header.text}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
+      {display ? (
+        <table border={1}>
+          <thead>
+            <tr>
+              {tableData.map((header, index) => {
+                return (
+                  <th
+                    key={index}
+                    onClick={() => {
+                      orderTable(header.onClick);
+                      setOrder(!order);
+                    }}
+                  >
+                    {header.text}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
 
-        {allData.map((city, index) => {
-          return (
-            <tbody key={index}>
-              <tr>
-                <td
-                  className="city"
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.co.il/search?q=${city["שם_ישוב"]}`,
-                      "_blank"
-                    )
-                  }
-                >
-                  {city["שם_ישוב"]}
-                </td>
-                <td>{city["גיל_0_5"]}</td>
-                <td>{city["גיל_6_18"]}</td>
-                <td>{city["גיל_19_45"]}</td>
-                <td>{city["גיל_46_55"]}</td>
-                <td>{city["גיל_56_64"]}</td>
-                <td>{city["גיל_65_פלוס"]}</td>
-                <td>{city["סהכ"]}</td>
-              </tr>
-            </tbody>
-          );
-        })}
-      </table>
+          {allData.map((city, index) => {
+            return (
+              <tbody key={index}>
+                <tr>
+                  <td
+                    className="city"
+                    onClick={() =>
+                      window.open(
+                        `https://www.google.co.il/search?q=${city["שם_ישוב"]}`,
+                        "_blank"
+                      )
+                    }
+                  >
+                    {city["שם_ישוב"]}
+                  </td>
+                  <td>{city["גיל_0_5"]}</td>
+                  <td>{city["גיל_6_18"]}</td>
+                  <td>{city["גיל_19_45"]}</td>
+                  <td>{city["גיל_46_55"]}</td>
+                  <td>{city["גיל_56_64"]}</td>
+                  <td>{city["גיל_65_פלוס"]}</td>
+                  <td>{city["סהכ"]}</td>
+                </tr>
+              </tbody>
+            );
+          })}
+        </table>
+      ) : (
+        <Charts data={allData} />
+      )}
     </>
   );
 }

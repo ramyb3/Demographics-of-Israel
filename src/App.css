@@ -30,7 +30,8 @@ input {
   text-align: center;
 }
 
-button {
+button,
+select {
   font-weight: bold;
   font-size: 20px;
   cursor: pointer;
@@ -55,4 +56,8 @@ button {
   cursor: pointer;
   background-color: firebrick;
   color: whitesmoke;
+}
+
+.highcharts-credits {
+  display: none;
 }
