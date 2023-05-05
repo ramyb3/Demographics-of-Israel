@@ -1,10 +1,13 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 export default function App() {
   const [allData, setData] = useState([]);
+  const [apiData, setAPIData] = useState([]);
   const [order, setOrder] = useState(true);
+  const [search, setSearch] = useState("");
+  const serachRef = useRef(null);
 
   const tableData = [
     {
@@ -56,6 +59,7 @@ export default function App() {
           return parseInt(b["סהכ"]) - parseInt(a["סהכ"]);
         });
 
+        setAPIData(arr);
         setData(arr);
       } catch (e) {
         console.log(e);
@@ -70,7 +74,7 @@ export default function App() {
       return array.sort((a, b) => {
         const x = key === "שם_ישוב" ? a["שם_ישוב"].trim() : parseInt(a[key]);
         const y = key === "שם_ישוב" ? b["שם_ישוב"].trim() : parseInt(b[key]);
-  
+
         return x < y ? -1 : x > y ? 1 : 0;
       });
     };
@@ -79,11 +83,44 @@ export default function App() {
     setData(order ? [...arr] : [...arr.reverse()]);
   };
 
+  const getCity = () => {
+    if (search !== "") {
+      const list = allData.filter((city) => city["שם_ישוב"].includes(search));
+
+      if (list.length === 0) {
+        alert("אין תוצאות! נסו שוב");
+      } else {
+        setData(list);
+      }
+    } else {
+      alert("נא להקליד יישוב בשביל לקבל תוצאה!");
+    }
+  };
+
   return (
     <>
-      <header>
-        *המידע מתעדכן אחת לשבוע ע"י המדינה*
-      </header>
+      <header>*המידע מתעדכן אחת לשבוע ע"י המדינה*</header>
+
+      <div className="search">
+        <input
+          ref={serachRef}
+          placeholder="הזן יישוב"
+          type="text"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button onClick={getCity}>חיפוש</button>
+        <button
+          onClick={() => {
+            serachRef.current.value = "";
+            setSearch("");
+            setData(apiData);
+          }}
+        >
+          הסר חיפוש
+        </button>
+        <span className="cities">יישובים: {allData.length}</span>
+      </div>
+
       <table border={1}>
         <thead>
           <tr>
