@@ -178,6 +178,7 @@ export default function App() {
                               )
                             );
                             setDisplay(false);
+                            setCompared([]);
 
                             setTimeout(() => {
                               if (window.confirm("לחפש את היישוב בגוגל?")) {

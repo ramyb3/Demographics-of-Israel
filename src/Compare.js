@@ -11,8 +11,6 @@ export default function Compare({
   const [values, setValues] = useState({ first: "", second: "" });
 
   const compareCities = () => {
-    serachRef.current.value = "";
-
     if (values.first === values.second) {
       alert("אי אפשר להשוות בין אותו יישוב!");
       return;
@@ -22,9 +20,10 @@ export default function Compare({
       return;
     }
 
+    serachRef.current.value = "";
     const arr = [];
 
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < Object.keys(values).length; i++) {
       const obj = data.find(
         (city) =>
           city[tableData[0].onClick].trim() ===
