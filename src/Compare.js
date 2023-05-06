@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tableData } from "./App";
 
 export default function Compare({
   data,
   setData,
-  selectRef1,
-  selectRef2,
   serachRef,
+  compared,
+  setCompared,
 }) {
   const [values, setValues] = useState({ first: "", second: "" });
 
@@ -33,6 +33,7 @@ export default function Compare({
       arr.push(obj);
     }
 
+    setCompared([values.first, values.second]);
     setData(arr);
   };
 
@@ -40,7 +41,7 @@ export default function Compare({
     <div className="buttons">
       <span>השוואה בין יישובים:</span>
       <Select
-        selectRef={selectRef1}
+        compared={compared}
         data={data}
         values={values}
         setValues={setValues}
@@ -48,7 +49,7 @@ export default function Compare({
       />
       <span>לבין</span>
       <Select
-        selectRef={selectRef2}
+        compared={compared}
         data={data}
         values={values}
         setValues={setValues}
@@ -59,7 +60,15 @@ export default function Compare({
   );
 }
 
-function Select({ data, values, setValues, position, selectRef }) {
+function Select({ data, values, setValues, position, compared }) {
+  const selectRef = useRef(null);
+
+  useEffect(() => {
+    if (compared.length === 0) {
+      selectRef.current.value = "";
+    }
+  }, [compared]);
+
   return (
     <select
       ref={selectRef}

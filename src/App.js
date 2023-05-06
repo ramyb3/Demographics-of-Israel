@@ -42,12 +42,11 @@ export const tableData = [
 export default function App() {
   const [allData, setData] = useState([]);
   const [apiData, setAPIData] = useState([]);
-  const [order, setOrder] = useState(true);
+  const [order, setOrder] = useState(false);
   const [display, setDisplay] = useState(true);
+  const [compared, setCompared] = useState([]);
   const [search, setSearch] = useState("");
   const serachRef = useRef(null);
-  const selectRef1 = useRef(null);
-  const selectRef2 = useRef(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -59,10 +58,6 @@ export default function App() {
         const arr = resp.data.result.records.filter(
           (city) => parseInt(city["סמל_ישוב"]) !== 0
         );
-
-        arr.sort((a, b) => {
-          return parseInt(b["סהכ"]) - parseInt(a["סהכ"]);
-        });
 
         setAPIData(arr);
         setData(arr);
@@ -81,9 +76,6 @@ export default function App() {
 
   const getCity = () => {
     if (search !== "") {
-      selectRef1.current.value = "";
-      selectRef2.current.value = "";
-
       const list = apiData.filter((city) =>
         city[tableData[0].onClick].includes(search)
       );
@@ -91,6 +83,7 @@ export default function App() {
       if (list.length === 0) {
         alert("אין תוצאות! נסו שוב");
       } else {
+        setCompared([]);
         setData(list);
       }
     } else {
@@ -121,8 +114,7 @@ export default function App() {
             style={{ backgroundColor: "beige" }}
             onClick={() => {
               serachRef.current.value = "";
-              selectRef1.current.value = "";
-              selectRef2.current.value = "";
+              setCompared([]);
               setSearch("");
               setData(apiData);
             }}
@@ -140,10 +132,10 @@ export default function App() {
 
         <Compare
           serachRef={serachRef}
-          selectRef1={selectRef1}
-          selectRef2={selectRef2}
           data={sortByKey(apiData, tableData[0].onClick)}
           setData={setData}
+          compared={compared}
+          setCompared={setCompared}
         />
       </div>
 
@@ -210,7 +202,12 @@ export default function App() {
           })}
         </table>
       ) : (
-        <Charts data={allData} setData={setData} setDisplay={setDisplay} />
+        <Charts
+          data={allData}
+          setData={setData}
+          setDisplay={setDisplay}
+          compared={compared}
+        />
       )}
     </>
   );

@@ -20,7 +20,7 @@ const options = [
 
 const color = "rgb(150, 53, 142)";
 
-export default function Charts({ data, setData, setDisplay }) {
+export default function Charts({ data, setData, setDisplay, compared }) {
   const [value, setValue] = useState(options[0].value);
   const [chartData, setChartData] = useState([]);
 
@@ -28,9 +28,26 @@ export default function Charts({ data, setData, setDisplay }) {
     const arr = [];
 
     if (value === options[0].value) {
-      for (let i = 1; i < tableData.length; i++) {
-        const obj = sumData(data, tableData[i].onClick, tableData[i].text);
-        arr.push(obj);
+      if (compared.length > 0) {
+        for (let j = 0; j < data.length; j++) {
+          const array = [];
+
+          for (let i = 1; i < tableData.length; i++) {
+            const obj = sumData(
+              [data[j]],
+              tableData[i].onClick,
+              tableData[i].text
+            );
+            array.push(obj);
+          }
+
+          arr.push(array);
+        }
+      } else {
+        for (let i = 1; i < tableData.length; i++) {
+          const obj = sumData(data, tableData[i].onClick, tableData[i].text);
+          arr.push(obj);
+        }
       }
     } else if (value === options[1].value) {
       for (let i = 0; i < data.length; i++) {
@@ -67,6 +84,13 @@ export default function Charts({ data, setData, setDisplay }) {
   const charts = {
     chart: {
       type: "column",
+      events: {
+        render() {
+          if (value !== options[0].value || compared.length === 0) {
+            this.series[1]?.remove();
+          }
+        },
+      },
     },
     title: {
       text: null,
@@ -103,14 +127,26 @@ export default function Charts({ data, setData, setDisplay }) {
     },
     tooltip: {
       formatter: function () {
-        return `<span style="font-weight:bold">${this.y}</span>`;
+        return `<div style="font-weight:bold; display:flex">${
+          value === options[1].value ? this.key : ""
+        }${
+          value === options[0].value && compared.length > 0
+            ? compared[this.point.colorIndex]
+            : ""
+        }
+        ${this.y}</div>`;
       },
     },
+    colors: ["#2caffe", "#08af0d"],
     series: [
       {
         cursor: "pointer",
         name: "תושבים",
         data: chartData,
+        data:
+          compared.length > 0 && value === options[0].value
+            ? chartData[0]
+            : chartData,
         point: {
           events: {
             click: (e) => {
@@ -130,6 +166,11 @@ export default function Charts({ data, setData, setDisplay }) {
             },
           },
         },
+      },
+      {
+        cursor: "pointer",
+        name: "תושבים",
+        data: chartData[1],
       },
     ],
   };
