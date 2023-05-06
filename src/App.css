@@ -37,11 +37,22 @@ select {
   cursor: pointer;
 }
 
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
 .search {
   display: flex;
   gap: 3px;
+}
+
+.selector {
+  display: flex;
   justify-content: center;
-  align-items: center;
   padding: 10px;
 }
 

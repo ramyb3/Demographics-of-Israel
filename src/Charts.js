@@ -3,35 +3,53 @@ import HighchartsReact from "highcharts-react-official";
 import { useEffect, useState } from "react";
 import { tableData } from "./App";
 
-export default function Charts({ data }) {
-  const [value, setValue] = useState("ages");
-  const [chartData, setChartData] = useState([]);
+const options = [
+  {
+    name: "גיל",
+    value: "age",
+  },
+  {
+    name: "יישוב",
+    value: "city",
+  },
+  {
+    name: "איזור",
+    value: "area",
+  },
+];
 
-  const color = "rgb(150, 53, 142)";
+const color = "rgb(150, 53, 142)";
+
+export default function Charts({ data, setData, setDisplay }) {
+  const [value, setValue] = useState(options[0].value);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     const arr = [];
 
-    if (value === "ages") {
+    if (value === options[0].value) {
       for (let i = 1; i < tableData.length; i++) {
         const obj = sumData(data, tableData[i].onClick, tableData[i].text);
         arr.push(obj);
       }
-    } else if (value === "cities") {
+    } else if (value === options[1].value) {
       for (let i = 0; i < data.length; i++) {
         arr.push([
           data[i][tableData[0].onClick],
           parseInt(data[i][tableData[tableData.length - 1].onClick]),
         ]);
       }
+    } else if (value === options[2].value) {
+      let area = data.map((city) => city["סמל_נפה"]);
+      area = area.filter((item, index) => area.indexOf(item) === index);
+
+      for (let i = 0; i < area.length; i++) {
+        const obj = data.filter((city) => city["סמל_נפה"] === area[i]);
+        arr.push(
+          sumData(obj, tableData[tableData.length - 1].onClick, obj[0]["נפה"])
+        );
+      }
     }
-    // else if (value === "area") {
-    // let area = Object.entries(data);
-    // console.log(area);
-    // for (let i = 0; i < data.length; i++) {
-    //   arr.push([data[i][tableData[0].onClick],parseInt(data[i][tableData[tableData.length-1].onClick])]);
-    // }
-    // }
 
     setChartData(arr);
   }, [value, data]);
@@ -46,37 +64,16 @@ export default function Charts({ data }) {
     return [name, sum];
   };
 
-  const options = [
-    {
-      name: "גילאים",
-      value: "ages",
-    },
-    {
-      name: "יישובים ",
-      value: "cities",
-    },
-    // {
-    //   name: "איזור",
-    //   value: "area",
-    // },
-  ];
-
   const charts = {
     chart: {
       type: "column",
-      // type: "bar",
     },
     title: {
       text: null,
     },
-    // plotOptions: {
-    //   series: {
-    //     pointWidth: 8,
-    //   },
-    // },
-    // legend: {
-    //   enabled: false,
-    // },
+    legend: {
+      enabled: false,
+    },
     xAxis: {
       type: "category",
       labels: {
@@ -111,15 +108,35 @@ export default function Charts({ data }) {
     },
     series: [
       {
+        cursor: "pointer",
         name: "תושבים",
         data: chartData,
+        point: {
+          events: {
+            click: (e) => {
+              if (value !== options[0].value) {
+                setData(
+                  data.filter(
+                    (city) =>
+                      city[
+                        value === options[1].value
+                          ? tableData[0].onClick
+                          : "נפה"
+                      ] === e.point.name
+                  )
+                );
+                setDisplay(true);
+              }
+            },
+          },
+        },
       },
     ],
   };
 
   return (
     <>
-      <div style={{ textAlign: "center" }}>
+      <div className="selector">
         <select value={value} onChange={(e) => setValue(e.target.value)}>
           {options.map(({ name, value }, index) => (
             <option key={index} value={value}>

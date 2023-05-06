@@ -93,7 +93,7 @@ export default function App() {
 
   const getCity = () => {
     if (search !== "") {
-      const list = allData.filter((city) =>
+      const list = apiData.filter((city) =>
         city[tableData[0].onClick].includes(search)
       );
 
@@ -111,31 +111,35 @@ export default function App() {
     <>
       <header>*המידע מתעדכן אחת לשבוע ע"י המדינה*</header>
 
-      <div className="search">
-        <button onClick={() => setDisplay(!display)}>
-          {display ? "גרף" : "טבלה"}
-        </button>
-
-        <input
-          ref={serachRef}
-          placeholder="הזן יישוב"
-          type="text"
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              getCity();
-            }
-          }}
-        />
-        <button onClick={getCity}>חיפוש</button>
+      <div className="buttons">
+        <div className="search">
+          <input
+            ref={serachRef}
+            placeholder="הזן יישוב"
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                getCity();
+              }
+            }}
+          />
+          <button onClick={getCity}>חיפוש</button>
+        </div>
         <button
+          style={{ backgroundColor: "beige" }}
           onClick={() => {
             serachRef.current.value = "";
             setSearch("");
             setData(apiData);
           }}
         >
-          הסר חיפוש
+          כל היישובים
+        </button>
+        <button
+          style={{ backgroundColor: "paleturquoise" }}
+          onClick={() => setDisplay(!display)}
+        >
+          תצוגת {display ? "גרף" : "טבלה"}
         </button>
         <span className="cities">יישובים: {allData.length}</span>
       </div>
@@ -171,12 +175,23 @@ export default function App() {
                         className={index === 0 ? "city" : ""}
                         onClick={() => {
                           if (index === 0) {
-                            window.open(
-                              `https://www.google.co.il/search?q=${
-                                city[item.onClick]
-                              }`,
-                              "_blank"
+                            setData(
+                              allData.filter(
+                                (obj) =>
+                                  obj[tableData[0].onClick] ===
+                                  city[item.onClick]
+                              )
                             );
+                            setDisplay(false);
+
+                            if (window.confirm("לחפש את היישוב בגוגל?")) {
+                              window.open(
+                                `https://www.google.co.il/search?q=${
+                                  city[item.onClick]
+                                }`,
+                                "_blank"
+                              );
+                            }
                           }
                         }}
                       >
@@ -190,7 +205,7 @@ export default function App() {
           })}
         </table>
       ) : (
-        <Charts data={allData} />
+        <Charts data={allData} setData={setData} setDisplay={setDisplay} />
       )}
     </>
   );
