@@ -55,9 +55,17 @@ export default function App() {
           "https://data.gov.il/api/3/action/datastore_search?resource_id=64edd0ee-3d5d-43ce-8562-c336c24dbc1f&limit=10000"
         );
 
-        const arr = resp.data.result.records.filter(
+        let arr = resp.data.result.records.filter(
           (city) => parseInt(city["סמל_ישוב"]) !== 0
         );
+
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i][tableData[0].onClick].includes("(")) {
+            arr[i][tableData[0].onClick] = arr[i][tableData[0].onClick]
+              .replace("(", ")")
+              .replace(")", "(");
+          }
+        }
 
         setAPIData(arr);
         setData(arr);
@@ -164,9 +172,30 @@ export default function App() {
               <tbody key={index}>
                 <tr>
                   {tableData.map((item, index) => {
+                    // const total =
+                    //   index === tableData.length - 1
+                    //     ? parseInt(city[item.onClick])
+                    //     : null;
+
                     return (
                       <td
                         key={index}
+                        // style={
+                        //   total
+                        //     ? {
+                        //         color: `${
+                        //           total >= 100_000
+                        //             ? "green"
+                        //             : total >= 10_000 && total < 100_000
+                        //             ? "orange"
+                        //             : total >= 1_000 && total < 10_000
+                        //             ? "blue"
+                        //             : "red"
+                        //         }`,
+                        //         fontWeight: "bold",
+                        //       }
+                        //     : null
+                        // }
                         className={index === 0 ? "city" : ""}
                         onClick={() => {
                           if (index === 0) {
