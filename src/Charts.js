@@ -142,7 +142,6 @@ export default function Charts({ data, setData, setDisplay, compared }) {
       {
         cursor: "pointer",
         name: "תושבים",
-        data: chartData,
         data:
           compared.length > 0 && value === options[0].value
             ? chartData[0]
