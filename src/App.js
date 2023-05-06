@@ -2,6 +2,7 @@ import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Charts from "./Charts";
+import Compare from "./Compare";
 
 export const tableData = [
   {
@@ -45,6 +46,8 @@ export default function App() {
   const [display, setDisplay] = useState(true);
   const [search, setSearch] = useState("");
   const serachRef = useRef(null);
+  const selectRef1 = useRef(null);
+  const selectRef2 = useRef(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -72,27 +75,15 @@ export default function App() {
   }, []);
 
   const orderTable = (method) => {
-    const sortByKey = (array, key) => {
-      return array.sort((a, b) => {
-        const x =
-          key === tableData[0].onClick
-            ? a[tableData[0].onClick].trim()
-            : parseInt(a[key]);
-        const y =
-          key === tableData[0].onClick
-            ? b[tableData[0].onClick].trim()
-            : parseInt(b[key]);
-
-        return x < y ? -1 : x > y ? 1 : 0;
-      });
-    };
-
     const arr = sortByKey(allData, method);
     setData(order ? [...arr] : [...arr.reverse()]);
   };
 
   const getCity = () => {
     if (search !== "") {
+      selectRef1.current.value = "";
+      selectRef2.current.value = "";
+
       const list = apiData.filter((city) =>
         city[tableData[0].onClick].includes(search)
       );
@@ -111,37 +102,49 @@ export default function App() {
     <>
       <header>*המידע מתעדכן אחת לשבוע ע"י המדינה*</header>
 
-      <div className="buttons">
-        <div className="search">
-          <input
-            ref={serachRef}
-            placeholder="הזן יישוב"
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                getCity();
-              }
+      <div className="top-layout">
+        <div className="buttons">
+          <div className="search">
+            <input
+              ref={serachRef}
+              placeholder="הזן יישוב"
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  getCity();
+                }
+              }}
+            />
+            <button onClick={getCity}>חיפוש</button>
+          </div>
+          <button
+            style={{ backgroundColor: "beige" }}
+            onClick={() => {
+              serachRef.current.value = "";
+              selectRef1.current.value = "";
+              selectRef2.current.value = "";
+              setSearch("");
+              setData(apiData);
             }}
-          />
-          <button onClick={getCity}>חיפוש</button>
+          >
+            כל היישובים
+          </button>
+          <button
+            style={{ backgroundColor: "paleturquoise" }}
+            onClick={() => setDisplay(!display)}
+          >
+            תצוגת {display ? "גרף" : "טבלה"}
+          </button>
+          <span className="cities">יישובים: {allData.length}</span>
         </div>
-        <button
-          style={{ backgroundColor: "beige" }}
-          onClick={() => {
-            serachRef.current.value = "";
-            setSearch("");
-            setData(apiData);
-          }}
-        >
-          כל היישובים
-        </button>
-        <button
-          style={{ backgroundColor: "paleturquoise" }}
-          onClick={() => setDisplay(!display)}
-        >
-          תצוגת {display ? "גרף" : "טבלה"}
-        </button>
-        <span className="cities">יישובים: {allData.length}</span>
+
+        <Compare
+          serachRef={serachRef}
+          selectRef1={selectRef1}
+          selectRef2={selectRef2}
+          data={sortByKey(apiData, tableData[0].onClick)}
+          setData={setData}
+        />
       </div>
 
       {display ? (
@@ -184,7 +187,7 @@ export default function App() {
                             );
                             setDisplay(false);
 
-                            setTimeout(()=>{
+                            setTimeout(() => {
                               if (window.confirm("לחפש את היישוב בגוגל?")) {
                                 window.open(
                                   `https://www.google.co.il/search?q=${
@@ -193,7 +196,7 @@ export default function App() {
                                   "_blank"
                                 );
                               }
-                            },1000)
+                            }, 1000);
                           }
                         }}
                       >
@@ -212,3 +215,18 @@ export default function App() {
     </>
   );
 }
+
+const sortByKey = (array, key) => {
+  return array.sort((a, b) => {
+    const x =
+      key === tableData[0].onClick
+        ? a[tableData[0].onClick].trim()
+        : parseInt(a[key]);
+    const y =
+      key === tableData[0].onClick
+        ? b[tableData[0].onClick].trim()
+        : parseInt(b[key]);
+
+    return x < y ? -1 : x > y ? 1 : 0;
+  });
+};
