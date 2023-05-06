@@ -184,14 +184,16 @@ export default function App() {
                             );
                             setDisplay(false);
 
-                            if (window.confirm("לחפש את היישוב בגוגל?")) {
-                              window.open(
-                                `https://www.google.co.il/search?q=${
-                                  city[item.onClick]
-                                }`,
-                                "_blank"
-                              );
-                            }
+                            setTimeout(()=>{
+                              if (window.confirm("לחפש את היישוב בגוגל?")) {
+                                window.open(
+                                  `https://www.google.co.il/search?q=${
+                                    city[item.onClick]
+                                  }`,
+                                  "_blank"
+                                );
+                              }
+                            },1000)
                           }
                         }}
                       >
