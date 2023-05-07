@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TooltipWrapper, tableData } from "./App";
 import Dialog from "@mui/material/Dialog";
 import { DialogTitle } from "@mui/material";
-import { isDesktop } from "react-device-detect";
+import Select from "react-select";
 
 export default function Compare({
   data,
@@ -16,7 +16,17 @@ export default function Compare({
   const [selectData, setSelectData] = useState([]);
 
   useEffect(() => {
-    setSelectData(data);
+    if (open) {
+      const arr = [];
+
+      for (let i = 0; i < data.length; i++) {
+        const city = data[i][tableData[0].onClick];
+        arr.push({ value: city, label: city });
+      }
+
+      setSelectData(arr);
+    }
+
     setValues([]);
   }, [open]);
 
@@ -25,19 +35,25 @@ export default function Compare({
       alert("נא לבחור לפחות 2 יישובים בשביל לקבל תוצאה!");
       return;
     }
+    if (values.length > 5) {
+      alert("ניתן להשוות עד 5 יישובים!");
+      return;
+    }
 
     serachRef.current.value = "";
 
     const arr = [];
+    const cities = [];
 
     for (let i = 0; i < Object.keys(values).length; i++) {
       const obj = data.find(
-        (city) => city[tableData[0].onClick].trim() === values[i]
+        (city) => city[tableData[0].onClick] === values[i].label
       );
       arr.push(obj);
+      cities.push(values[i].label);
     }
 
-    setCompared(values);
+    setCompared(cities);
     setData(arr);
     setOpen(false);
   };
@@ -66,67 +82,46 @@ export default function Compare({
             ניתן להשוות עד 5 יישובים
           </DialogTitle>
 
-          <div style={{ display: "flex", gap: "20px" }}>
-            <div
-              className="dialog"
-              style={
-                !isDesktop
-                  ? { height: "200px", alignItems: "center", gap: "15px" }
-                  : null
-              }
-            >
-              <input
-                style={!isDesktop ? { height: "40px" } : null}
-                placeholder="הזן יישוב"
-                onChange={(e) =>
-                  setSelectData(
-                    data.filter((city) =>
-                      city[tableData[0].onClick].includes(e.target.value)
-                    )
-                  )
-                }
-              />
-              {isDesktop ? null : (
-                <span style={{ fontWeight: "bold" }}>בחר יישובים מהרשימה:</span>
-              )}
-              <select
-                style={!isDesktop ? { height: "40px", width: "100%" } : null}
-                size={10}
-                onChange={(e) => {
-                  const newVlues = values.filter(
-                    (item, index) => values.indexOf(item) === index
-                  );
-
-                  if (newVlues.length > 4) {
-                    alert("ניתן להשוות עד 5 יישובים!");
-                  } else {
-                    setValues([...newVlues, e.target.value]);
-                  }
-                }}
-              >
-                {selectData.map((city, index) => {
-                  return (
-                    <option key={index}>{city[tableData[0].onClick]}</option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="dialog" style={{ alignItems: "center" }}>
-              {values.length > 0 ? (
-                <>
-                  <span style={{ fontWeight: "bold" }}>יישובים שנבחרו:</span>
-                  {values
-                    .filter((item, index) => values.indexOf(item) === index)
-                    .map((value, index) => {
-                      return <span key={index}>{value}</span>;
-                    })}
-                </>
-              ) : null}
-            </div>
-          </div>
+          <Select
+            noOptionsMessage={() => "אין תוצאות!"}
+            isMulti
+            placeholder={<span>חפש יישוב</span>}
+            onChange={(e) => setValues(e)}
+            menuPortalTarget={document.body}
+            menuPlacement={"bottom"}
+            closeMenuOnSelect={false}
+            styles={selectStyle}
+            options={selectData}
+            components={{ IndicatorSeparator: () => null }}
+          />
           <button onClick={compareCities}>השוואה בין יישובים</button>
         </div>
       </Dialog>
     </>
   );
 }
+
+const selectStyle = {
+  control: (styles) => ({
+    ...styles,
+    backgroundColor: "white",
+    cursor: "pointer",
+    minWidth: "500px",
+  }),
+  menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+  option: (styles) => ({ ...styles, cursor: "pointer" }),
+  multiValueLabel: (styles, { data }) => ({
+    ...styles,
+    cursor: "pointer",
+    color: data.color,
+  }),
+  multiValueRemove: (styles, { data }) => ({
+    ...styles,
+    cursor: "pointer",
+    color: data.color,
+    ":hover": {
+      backgroundColor: data.color,
+      color: "white",
+    },
+  }),
+};
