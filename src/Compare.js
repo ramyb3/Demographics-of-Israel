@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TooltipWrapper, tableData } from "./App";
 import Dialog from "@mui/material/Dialog";
 import { DialogTitle } from "@mui/material";
+import { isDesktop } from "react-device-detect";
 
 export default function Compare({
   data,
@@ -66,8 +67,16 @@ export default function Compare({
           </DialogTitle>
 
           <div style={{ display: "flex", gap: "20px" }}>
-            <div className="dialog">
+            <div
+              className="dialog"
+              style={
+                !isDesktop
+                  ? { height: "200px", alignItems: "center", gap: "15px" }
+                  : null
+              }
+            >
               <input
+                style={!isDesktop ? { height: "40px" } : null}
                 placeholder="הזן יישוב"
                 onChange={(e) =>
                   setSelectData(
@@ -77,7 +86,11 @@ export default function Compare({
                   )
                 }
               />
+              {isDesktop ? null : (
+                <span style={{ fontWeight: "bold" }}>בחר יישובים מהרשימה:</span>
+              )}
               <select
+                style={!isDesktop ? { height: "40px", width: "100%" } : null}
                 size={10}
                 onChange={(e) => {
                   const newVlues = values.filter(

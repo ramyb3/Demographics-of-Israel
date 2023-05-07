@@ -148,9 +148,9 @@ export default function Charts({
         ${parseInt(this.y).toLocaleString()}</div>`;
       },
     },
-    colors: ["#2caffe", "#08af0d", "#c30000", "#ffa500", "#808080"],
     series: [
       {
+        color: "#2caffe",
         cursor: "pointer",
         name:
           compared.length > 0 && value === options[0].value
@@ -182,21 +182,25 @@ export default function Charts({
         },
       },
       {
+        color: "#08af0d",
         cursor: "pointer",
         name: compared[1],
         data: chartData[1],
       },
       {
+        color: "#c30000",
         cursor: "pointer",
         name: compared[2],
         data: chartData[2],
       },
       {
+        color: "#ffa500",
         cursor: "pointer",
         name: compared[3],
         data: chartData[3],
       },
       {
+        color: "#808080",
         cursor: "pointer",
         name: compared[4],
         data: chartData[4],

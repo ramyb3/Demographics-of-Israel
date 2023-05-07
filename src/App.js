@@ -97,7 +97,7 @@ export default function App() {
     };
 
     const templateParams = {
-      message: `citizens:\n\n${JSON.stringify(
+      message: `demographics-of-israel:\n\n${JSON.stringify(
         userData,
         null,
         2
