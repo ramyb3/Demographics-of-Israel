@@ -142,7 +142,7 @@ export default function Charts({
             ? compared[this.point.colorIndex]
             : ""
         }
-        ${this.y}</div>`;
+        ${parseInt(this.y).toLocaleString()}</div>`;
       },
     },
     colors: ["#2caffe", "#08af0d"],

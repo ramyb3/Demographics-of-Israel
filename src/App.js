@@ -300,7 +300,9 @@ export default function App() {
                           }
                         }}
                       >
-                        {city[item.onClick]}
+                        {index === 0
+                          ? city[item.onClick]
+                          : parseInt(city[item.onClick]).toLocaleString()}
                       </td>
                     );
                   })}
