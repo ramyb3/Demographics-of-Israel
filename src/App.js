@@ -53,6 +53,7 @@ export default function App() {
     step3: false,
     step4: false,
     step5: false,
+    step6: false,
   });
   const [compared, setCompared] = useState([]);
   const [search, setSearch] = useState("");
@@ -154,60 +155,57 @@ export default function App() {
       <header>*המידע מתעדכן אחת לשבוע ע"י המדינה*</header>
 
       <div className="top-layout">
-        <div className="buttons">
-          <div className="search">
-            <input
-              ref={serachRef}
-              placeholder="הזן יישוב"
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  getCity();
-                }
-              }}
-            />
-            <button onClick={getCity}>חיפוש</button>
-          </div>
-          <TooltipWrapper
-            placement="right"
-            title="להראות את כל היישובים"
-            open={tooltip.step1}
-            children={
-              <button
-                style={{ backgroundColor: "beige" }}
-                onClick={() => {
-                  serachRef.current.value = "";
-                  setCompared([]);
-                  setSearch("");
-                  setData(apiData);
-                }}
-              >
-                כל היישובים
-              </button>
-            }
+        <div className="search">
+          <input
+            ref={serachRef}
+            placeholder="הזן יישוב"
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                getCity();
+              }
+            }}
           />
-          <TooltipWrapper
-            title="לעבור בין תצוגות"
-            open={tooltip.step2}
-            children={
-              <button
-                style={{ backgroundColor: "paleturquoise" }}
-                onClick={() => setDisplay(!display)}
-              >
-                תצוגת {!display ? "גרף" : "טבלה"}
-              </button>
-            }
-          />
-          <span className="cities">יישובים: {allData.length}</span>
+          <button onClick={getCity}>חיפוש</button>
         </div>
-
+        <TooltipWrapper
+          placement="right"
+          title="להראות את כל היישובים"
+          open={tooltip.step1}
+          children={
+            <button
+              style={{ backgroundColor: "beige" }}
+              onClick={() => {
+                serachRef.current.value = "";
+                setCompared([]);
+                setSearch("");
+                setData(apiData);
+              }}
+            >
+              כל היישובים
+            </button>
+          }
+        />
+        <TooltipWrapper
+          title="לעבור בין תצוגות"
+          open={tooltip.step2}
+          children={
+            <button
+              style={{ backgroundColor: "paleturquoise" }}
+              onClick={() => setDisplay(!display)}
+            >
+              תצוגת {!display ? "גרף" : "טבלה"}
+            </button>
+          }
+        />
         <Compare
           serachRef={serachRef}
           data={sortByKey(apiData, tableData[0].onClick)}
           setData={setData}
-          compared={compared}
           setCompared={setCompared}
+          tooltip={tooltip.step3}
         />
+        <span className="cities">יישובים: {allData.length}</span>
       </div>
 
       {display ? (
@@ -226,8 +224,8 @@ export default function App() {
                         : ""
                     }
                     open={
-                      (tooltip.step3 && index === 0) ||
-                      (tooltip.step4 && index === tableData.length - 1)
+                      (tooltip.step4 && index === 0) ||
+                      (tooltip.step5 && index === tableData.length - 1)
                     }
                     children={
                       <th
@@ -325,7 +323,12 @@ export default function App() {
   );
 }
 
-function TooltipWrapper({ children, placement = "bottom", title, open }) {
+export function TooltipWrapper({
+  children,
+  placement = "bottom",
+  title,
+  open,
+}) {
   return (
     <Tooltip
       placement={placement}

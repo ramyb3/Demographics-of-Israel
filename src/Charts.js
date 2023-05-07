@@ -94,7 +94,14 @@ export default function Charts({
       events: {
         render() {
           if (value !== options[0].value || compared.length === 0) {
-            this.series[1]?.remove();
+            for (let i = this.series.length - 1; i > 0; i--) {
+              this.series[i]?.remove();
+            }
+          }
+          if (value === options[0].value && compared.length > 1) {
+            for (let i = this.series.length - 1; i > compared.length - 1; i--) {
+              this.series[i]?.remove();
+            }
           }
         },
       },
@@ -137,15 +144,11 @@ export default function Charts({
       formatter: function () {
         return `<div style="font-weight:bold; display:flex">${
           value === options[1].value ? this.key : ""
-        }${
-          value === options[0].value && compared.length > 0
-            ? compared[this.point.colorIndex]
-            : ""
         }
         ${parseInt(this.y).toLocaleString()}</div>`;
       },
     },
-    colors: ["#2caffe", "#08af0d"],
+    colors: ["#2caffe", "#08af0d", "#c30000", "#ffa500", "#808080"],
     series: [
       {
         cursor: "pointer",
@@ -182,6 +185,21 @@ export default function Charts({
         cursor: "pointer",
         name: compared[1],
         data: chartData[1],
+      },
+      {
+        cursor: "pointer",
+        name: compared[2],
+        data: chartData[2],
+      },
+      {
+        cursor: "pointer",
+        name: compared[3],
+        data: chartData[3],
+      },
+      {
+        cursor: "pointer",
+        name: compared[4],
+        data: chartData[4],
       },
     ],
   };

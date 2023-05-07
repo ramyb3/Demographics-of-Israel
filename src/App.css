@@ -49,15 +49,10 @@ select {
 
 .top-layout {
   display: flex;
-  flex-direction: column;
   gap: 10px;
-  padding: 10px;
-}
-
-.buttons {
-  display: flex;
-  gap: 20px;
   justify-content: center;
+  padding: 10px;
+  text-align: center;
 }
 
 .search {
