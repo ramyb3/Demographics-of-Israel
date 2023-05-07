@@ -73,6 +73,13 @@ select {
   padding: 3px;
 }
 
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 200px;
+}
+
 .city:hover {
   cursor: pointer;
   background-color: firebrick;
