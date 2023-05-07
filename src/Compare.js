@@ -65,6 +65,7 @@ function Select({ data, values, setValues, position, compared }) {
   useEffect(() => {
     if (compared.length === 0) {
       selectRef.current.value = "";
+      setValues({ first: "", second: "" });
     }
   }, [compared]);
 

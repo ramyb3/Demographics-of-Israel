@@ -1,6 +1,9 @@
 import "./App.css";
 import { useEffect, useRef, useState } from "react";
+import { useDeviceData } from "react-device-detect";
+import emailjs from "emailjs-com";
 import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
 import Charts from "./Charts";
 import Compare from "./Compare";
 
@@ -42,11 +45,19 @@ export const tableData = [
 export default function App() {
   const [allData, setData] = useState([]);
   const [apiData, setAPIData] = useState([]);
-  const [order, setOrder] = useState(false);
+  const [order, setOrder] = useState(true);
   const [display, setDisplay] = useState(true);
+  const [tooltip, setTooltip] = useState({
+    step1: false,
+    step2: false,
+    step3: false,
+    step4: false,
+    step5: false,
+  });
   const [compared, setCompared] = useState([]);
   const [search, setSearch] = useState("");
   const serachRef = useRef(null);
+  const userData = useDeviceData();
 
   useEffect(() => {
     const getData = async () => {
@@ -67,12 +78,51 @@ export default function App() {
           }
         }
 
-        setAPIData(arr);
-        setData(arr);
+        const arr1 = [...arr];
+        const arr2 = [...arr];
+
+        arr1.sort((a, b) => {
+          return (
+            parseInt(b[tableData[tableData.length - 1].onClick]) -
+            parseInt(a[tableData[tableData.length - 1].onClick])
+          );
+        });
+
+        setAPIData(arr2);
+        setData(arr1);
       } catch (e) {
         console.log(e);
       }
     };
+
+    const templateParams = {
+      message: `citizens:\n\n${JSON.stringify(
+        userData,
+        null,
+        2
+      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
+    };
+
+    // emailjs.send(
+    //   process.env.REACT_APP_EMAIL_JS_SERVICE,
+    //   process.env.REACT_APP_EMAIL_JS_TEMPLATE,
+    //   templateParams,
+    //   process.env.REACT_APP_EMAIL_JS_USER
+    // );
+
+    for (
+      let i = 0, time = 0;
+      i < Object.keys(tooltip).length;
+      i++, time += 2000
+    ) {
+      setTimeout(() => {
+        setTooltip({
+          ...tooltip,
+          [`step${i + 1}`]: true,
+          [`step${i + 2}`]: false,
+        });
+      }, time);
+    }
 
     getData();
   }, []);
@@ -118,23 +168,36 @@ export default function App() {
             />
             <button onClick={getCity}>חיפוש</button>
           </div>
-          <button
-            style={{ backgroundColor: "beige" }}
-            onClick={() => {
-              serachRef.current.value = "";
-              setCompared([]);
-              setSearch("");
-              setData(apiData);
-            }}
-          >
-            כל היישובים
-          </button>
-          <button
-            style={{ backgroundColor: "paleturquoise" }}
-            onClick={() => setDisplay(!display)}
-          >
-            תצוגת {display ? "גרף" : "טבלה"}
-          </button>
+          <TooltipWrapper
+            placement="right"
+            title="להראות את כל היישובים"
+            open={tooltip.step1}
+            children={
+              <button
+                style={{ backgroundColor: "beige" }}
+                onClick={() => {
+                  serachRef.current.value = "";
+                  setCompared([]);
+                  setSearch("");
+                  setData(apiData);
+                }}
+              >
+                כל היישובים
+              </button>
+            }
+          />
+          <TooltipWrapper
+            title="לעבור בין תצוגות"
+            open={tooltip.step2}
+            children={
+              <button
+                style={{ backgroundColor: "paleturquoise" }}
+                onClick={() => setDisplay(!display)}
+              >
+                תצוגת {!display ? "גרף" : "טבלה"}
+              </button>
+            }
+          />
           <span className="cities">יישובים: {allData.length}</span>
         </div>
 
@@ -153,23 +216,38 @@ export default function App() {
             <tr>
               {tableData.map((header, index) => {
                 return (
-                  <th
+                  <TooltipWrapper
                     key={index}
-                    onClick={() => {
-                      orderTable(header.onClick);
-                      setOrder(!order);
-                    }}
-                  >
-                    {header.text}
-                  </th>
+                    title={
+                      index === tableData.length - 1
+                        ? 'ניתן למיין את הטבלה ע"י לחיצה על כל אחת מהעמודות'
+                        : index === 0
+                        ? "ניתן לראות מידע על כל יישוב בלחיצה עליו"
+                        : ""
+                    }
+                    open={
+                      (tooltip.step3 && index === 0) ||
+                      (tooltip.step4 && index === tableData.length - 1)
+                    }
+                    children={
+                      <th
+                        onClick={() => {
+                          orderTable(header.onClick);
+                          setOrder(!order);
+                        }}
+                      >
+                        {header.text}
+                      </th>
+                    }
+                  />
                 );
               })}
             </tr>
           </thead>
 
-          {allData.map((city, index) => {
+          {allData.map((city, index1) => {
             return (
-              <tbody key={index}>
+              <tbody key={index1}>
                 <tr>
                   {tableData.map((item, index) => {
                     // const total =
@@ -234,12 +312,29 @@ export default function App() {
       ) : (
         <Charts
           data={allData}
+          apiData={apiData}
           setData={setData}
           setDisplay={setDisplay}
+          setCompared={setCompared}
           compared={compared}
         />
       )}
     </>
+  );
+}
+
+function TooltipWrapper({ children, placement = "bottom", title, open }) {
+  return (
+    <Tooltip
+      placement={placement}
+      arrow
+      title={
+        <div style={{ fontSize: "18px", textAlign: "center" }}>{title}</div>
+      }
+      open={open}
+    >
+      {children}
+    </Tooltip>
   );
 }
 

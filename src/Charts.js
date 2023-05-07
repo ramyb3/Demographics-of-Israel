@@ -20,7 +20,14 @@ const options = [
 
 const color = "rgb(150, 53, 142)";
 
-export default function Charts({ data, setData, setDisplay, compared }) {
+export default function Charts({
+  data,
+  apiData,
+  setData,
+  setDisplay,
+  compared,
+  setCompared,
+}) {
   const [value, setValue] = useState(options[0].value);
   const [chartData, setChartData] = useState([]);
 
@@ -96,7 +103,8 @@ export default function Charts({ data, setData, setDisplay, compared }) {
       text: null,
     },
     legend: {
-      enabled: false,
+      enabled:
+        value !== options[0].value || compared.length === 0 ? false : true,
     },
     xAxis: {
       type: "category",
@@ -141,7 +149,10 @@ export default function Charts({ data, setData, setDisplay, compared }) {
     series: [
       {
         cursor: "pointer",
-        name: "תושבים",
+        name:
+          compared.length > 0 && value === options[0].value
+            ? compared[0]
+            : "תושבים",
         data:
           compared.length > 0 && value === options[0].value
             ? chartData[0]
@@ -151,7 +162,7 @@ export default function Charts({ data, setData, setDisplay, compared }) {
             click: (e) => {
               if (value !== options[0].value) {
                 setData(
-                  data.filter(
+                  (value === options[1].value ? data : apiData).filter(
                     (city) =>
                       city[
                         value === options[1].value
@@ -160,6 +171,7 @@ export default function Charts({ data, setData, setDisplay, compared }) {
                       ] === e.point.name
                   )
                 );
+                setCompared([]);
                 setDisplay(true);
               }
             },
@@ -168,7 +180,7 @@ export default function Charts({ data, setData, setDisplay, compared }) {
       },
       {
         cursor: "pointer",
-        name: "תושבים",
+        name: compared[1],
         data: chartData[1],
       },
     ],
