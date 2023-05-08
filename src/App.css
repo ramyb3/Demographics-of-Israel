@@ -76,8 +76,9 @@ select {
 .dialog {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 200px;
+  gap: 15px;
+  align-items: center;
+  padding: 5px;
 }
 
 .city:hover {

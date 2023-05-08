@@ -74,10 +74,7 @@ export default function Compare({
       />
 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
-        <div
-          className="dialog"
-          style={{ gap: "15px", alignItems: "center", padding: "5px" }}
-        >
+        <div className="dialog">
           <DialogTitle sx={{ color: "red", fontWeight: "bold" }}>
             ניתן להשוות עד 5 יישובים
           </DialogTitle>
@@ -102,26 +99,7 @@ export default function Compare({
 }
 
 const selectStyle = {
-  control: (styles) => ({
-    ...styles,
-    backgroundColor: "white",
-    cursor: "pointer",
-    minWidth: "500px",
-  }),
+  control: (styles) => ({ ...styles, cursor: "pointer", minWidth: "500px" }),
   menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
   option: (styles) => ({ ...styles, cursor: "pointer" }),
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    cursor: "pointer",
-    color: data.color,
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    cursor: "pointer",
-    color: data.color,
-    ":hover": {
-      backgroundColor: data.color,
-      color: "white",
-    },
-  }),
 };

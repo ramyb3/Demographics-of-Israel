@@ -248,30 +248,9 @@ export default function App() {
               <tbody key={index1}>
                 <tr>
                   {tableData.map((item, index) => {
-                    // const total =
-                    //   index === tableData.length - 1
-                    //     ? parseInt(city[item.onClick])
-                    //     : null;
-
                     return (
                       <td
                         key={index}
-                        // style={
-                        //   total
-                        //     ? {
-                        //         color: `${
-                        //           total >= 100_000
-                        //             ? "green"
-                        //             : total >= 10_000 && total < 100_000
-                        //             ? "orange"
-                        //             : total >= 1_000 && total < 10_000
-                        //             ? "blue"
-                        //             : "red"
-                        //         }`,
-                        //         fontWeight: "bold",
-                        //       }
-                        //     : null
-                        // }
                         className={index === 0 ? "city" : ""}
                         onClick={() => {
                           if (index === 0) {
