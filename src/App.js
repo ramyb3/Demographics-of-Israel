@@ -1,7 +1,5 @@
 import "./App.css";
 import { useEffect, useRef, useState } from "react";
-import { useDeviceData } from "react-device-detect";
-import emailjs from "emailjs-com";
 import axios from "axios";
 import Tooltip from "@mui/material/Tooltip";
 import Charts from "./Charts";
@@ -58,7 +56,6 @@ export default function App() {
   const [compared, setCompared] = useState([]);
   const [search, setSearch] = useState("");
   const serachRef = useRef(null);
-  const userData = useDeviceData();
 
   useEffect(() => {
     const getData = async () => {
@@ -96,20 +93,29 @@ export default function App() {
       }
     };
 
-    const templateParams = {
-      message: `demographics-of-israel:\n\n${JSON.stringify(
-        userData,
-        null,
-        2
-      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
+    const sendMail = async () => {
+      try {
+        const response = await axios(
+          `https://api.apicagent.com/?ua=${navigator.userAgent}`
+        );
+
+        const body = {
+          resolution: `${window.screen.width} X ${window.screen.height}`,
+          response: JSON.stringify(response.data, null, 2),
+          name: `Demographics of Israel - ${
+            JSON.stringify(response.data).toLowerCase().includes("mobile")
+              ? "Mobile"
+              : "Desktop"
+          }`,
+        };
+
+        await axios.post(process.env.REACT_APP_MAIL, body);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
-    emailjs.send(
-      process.env.REACT_APP_EMAIL_JS_SERVICE,
-      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
-      templateParams,
-      process.env.REACT_APP_EMAIL_JS_USER
-    );
+    sendMail();
 
     for (
       let i = 0, time = 0;
