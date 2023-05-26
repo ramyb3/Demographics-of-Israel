@@ -102,11 +102,7 @@ export default function App() {
         const body = {
           resolution: `${window.screen.width} X ${window.screen.height}`,
           response: JSON.stringify(response.data, null, 2),
-          name: `Demographics of Israel - ${
-            JSON.stringify(response.data).toLowerCase().includes("mobile")
-              ? "Mobile"
-              : "Desktop"
-          }`,
+          name: "Demographics of Israel",
         };
 
         await axios.post(process.env.REACT_APP_MAIL, body);
